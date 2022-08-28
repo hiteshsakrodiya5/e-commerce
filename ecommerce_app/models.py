@@ -8,7 +8,7 @@ class CreateUpdateDate(models.Model):
 
     # Save date and time of add and update.
     created_at = models.DateTimeField(auto_now=True)
-    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
 
 
 class UniqueIds(models.Model):
@@ -39,15 +39,15 @@ class Base(CreateUpdateDate,UniqueIds):
 class Category(Base):
     class Meta:
         db_table = "category"
-    name = models.CharField(max_length=150, null=False)
+    name = models.CharField(max_length=150, null=True)
     status = models.CharField(null=True, max_length=150,choices=(("active","active"),("inactive","inactive")))
 
 
 class Product(Base):
     class Meta:
         db_table = "product"
-    name = models.CharField(max_length=150, null=False)
-    price = models.IntegerField(null=False)
+    name = models.CharField(max_length=150, null=True)
+    price = models.IntegerField(null=True)
     category = models.ForeignKey(Category(), on_delete=models.CASCADE)
     status = models.CharField(null=True, max_length=150, choices=(("active", "active"), ("inactive", "inactive")))
 
@@ -62,5 +62,4 @@ class Order(Base):
         ("pending", "pending"),
         ("failed", "failed"),
     ))
-    is_status = models.CharField(null=True, max_length=150, choices=(("active", "active"), ("inactive", "inactive")))
-    cancel_order = models.DateTimeField(default=None)
+    cancel_order = models.DateTimeField(default=None, null=True)

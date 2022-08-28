@@ -4,8 +4,8 @@ from .models import Category, Product, Order
 
 
 class CategorySerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=150, allow_blank=True)
-    status = serializers.CharField(max_length=150, allow_blank=True)
+    name = serializers.CharField(max_length=150, allow_null=True)
+    status = serializers.CharField(max_length=150, allow_null=True)
 
 
 class GetCategorySerializer(serializers.ModelSerializer):
@@ -47,16 +47,14 @@ class OrderGnerateSerializer(serializers.Serializer):
 
 class AddOrderSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(allow_null=False)
-    status = serializers.ChoiceField(allow_null=False, choices=(
+    status = serializers.ChoiceField(allow_blank=False, choices=(
         ("ok", "ok"),
         ("pending", "pending"),
         ("failed", "failed"),
     ))
-    is_status = serializers.ChoiceField(allow_null=True, choices=(("active", "active"), ("inactive", "inactive")))
-    cancel_order = serializers.DateTimeField(allow_null=True)
     class Meta:
         model = Order
-        fields = ["quantity","status","is_status","cancel_order"]
+        fields = ["quantity","status"]
 
 
 class UpdateOrderSerializer(ModelSerializer):
