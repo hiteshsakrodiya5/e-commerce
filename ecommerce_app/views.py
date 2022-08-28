@@ -7,6 +7,19 @@ from .serializers import CategorySerializer, GetCategorySerializer, AddProductSe
 from .services import CategoryService, UpdateCategoryService, AddProductService, UpdateProductService, AddOrderService, \
     UpdateOrderService
 from .models import Category, Product, Order
+from base_model.constants import (
+    PUBLIC_ID,
+    RESULT,
+    ERROR,
+    CATEGORY_DOEST_NOT_CREATE,
+    CATEGORY_IS_UPDATED,
+    CATEGORY_IS_DELETED,
+    CATEGORY_DOES_NOT_EXIST,
+    PRODUCT_NOT_CREATED,
+    PRODUCT_DOES_NOT_EXIST,
+    ORDER_DOES_NOT_EXIST,
+    ORDER_IS_DELETED,
+)
 
 
 class AddCategoryView(APIView):
@@ -18,8 +31,8 @@ class AddCategoryView(APIView):
                 "name": parsed_data["name"],
                 "status": parsed_data["status"]
             })
-            return Response({"public_id": category_id}, status=status.HTTP_200_OK)
-        return Response({"message": "failed"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({PUBLIC_ID: category_id}, status=status.HTTP_200_OK)
+        return Response({ERROR: CATEGORY_DOEST_NOT_CREATE}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetCategory(APIView):
@@ -27,9 +40,9 @@ class GetCategory(APIView):
         try:
             category = Category.objects.all()
             serial_data = GetCategorySerializer(category, many=True)
-            return Response({"categories": serial_data.data}, status=status.HTTP_200_OK)
+            return Response({RESULT: serial_data.data}, status=status.HTTP_200_OK)
         except Category.DoesNotExist:
-            return Response({"error": "category does not exist !"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({ERROR: CATEGORY_DOES_NOT_EXIST}, status=status.HTTP_404_NOT_FOUND)
 
 
 class DetailCateory(APIView):
@@ -37,9 +50,9 @@ class DetailCateory(APIView):
         try:
             category = Category.objects.get(public_id=public_id)
             serial_data = GetCategorySerializer(category)
-            return Response({"categories": serial_data.data}, status=status.HTTP_200_OK)
+            return Response({RESULT: serial_data.data}, status=status.HTTP_200_OK)
         except Category.DoesNotExist:
-            return Response({"error": "category does not exist !"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({ERROR: CATEGORY_DOES_NOT_EXIST}, status=status.HTTP_404_NOT_FOUND)
 
 
 class DeleteCategory(APIView):
@@ -47,9 +60,9 @@ class DeleteCategory(APIView):
         try:
             category = Category.objects.get(public_id=public_id)
             category.delete()
-            return Response({"success": "categories are deleted"}, status=status.HTTP_200_OK)
+            return Response({RESULT: CATEGORY_IS_DELETED}, status=status.HTTP_200_OK)
         except Category.DoesNotExist:
-            return Response({"error": "categories does not exist"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({ERROR: CATEGORY_DOES_NOT_EXIST}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UpdateCategory(APIView):
@@ -62,14 +75,14 @@ class UpdateCategory(APIView):
                 name = serialized_data.get("name")
                 status = serialized_data["status"]
                 updated_data = UpdateCategoryService.execute({
-                    "name":name,
-                    "status":status,
-                    "category":category,
+                    "name": name,
+                    "status": status,
+                    "category": category,
                 })
 
-            return Response({"success": "category is updated !"}, HTTP_200_OK)
+            return Response({RESULT: CATEGORY_IS_UPDATED}, HTTP_200_OK)
         except Category.DoesNotExist:
-            return Response({"message": "Category does not exist !"},HTTP_400_BAD_REQUEST)
+            return Response({ERROR: CATEGORY_DOES_NOT_EXIST},HTTP_400_BAD_REQUEST)
 
 
 class AddProducts(APIView):
@@ -89,9 +102,9 @@ class AddProducts(APIView):
                     "category": category,
                     "status": status,
                 })
-                return Response({"success": public_id}, HTTP_200_OK)
+                return Response({PUBLIC_ID: public_id}, HTTP_200_OK)
         except Category.DoesNotExist:
-            return Response({"error": "category does not exist"}, HTTP_400_BAD_REQUEST)
+            return Response({ERROR: CATEGORY_DOES_NOT_EXIST}, HTTP_400_BAD_REQUEST)
 
 
 class GetProducts(APIView):
@@ -99,19 +112,19 @@ class GetProducts(APIView):
         try:
             product = Product.objects.all()
             serial_data = AddProductSerializer(product, many=True)
-            return Response({"result": serial_data.data}, status=status.HTTP_200_OK)
+            return Response({RESULT: serial_data.data}, status=status.HTTP_200_OK)
         except Product.DoesNotExist:
-            return Response({"error": "product does not exist"}, status=status.HTTP_200_OK)
+            return Response({ERROR: PRODUCT_DOES_NOT_EXIST}, status=status.HTTP_200_OK)
 
 
 class DetailProduct(APIView):
     def get(self, request, public_id):
         try:
-            product=Product.objects.get(public_id=public_id)
+            product = Product.objects.get(public_id=public_id)
             serial_data = ProductSerializer(product)
-            return Response({"result": serial_data.data}, status=status.HTTP_200_OK)
+            return Response({RESULT: serial_data.data}, status=status.HTTP_200_OK)
         except Product.DoesNotExist:
-            return Response({"error": "product does not exist"}, status=status.HTTP_200_OK)
+            return Response({ERROR: PRODUCT_DOES_NOT_EXIST}, status=status.HTTP_200_OK)
 
 
 class UpdateProduct(APIView):
@@ -125,7 +138,7 @@ class UpdateProduct(APIView):
             "status": serialized_data["status"],
             "product": public_id,
         })
-            return Response({"success": f"{product_public_id} "})
+            return Response({PUBLIC_ID: product_public_id}, status=status.HTTP_201_CREATED)
 
 
 class DeleteProduct(APIView):
@@ -133,9 +146,9 @@ class DeleteProduct(APIView):
         try:
             product = Product.objects.get(public_id=public_id)
             product.delete()
-            return Response({"sucess": "deleted successfully.."}, status=status.HTTP_200_OK)
+            return Response({RESULT: "deleted successfully.."}, status=status.HTTP_200_OK)
         except Product.DoesNotExist:
-            return Response({"error:": "product does not exist!!!"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({ERROR: PRODUCT_DOES_NOT_EXIST}, status=status.HTTP_404_NOT_FOUND)
 
 
 class AddOrder(APIView):
@@ -152,17 +165,19 @@ class AddOrder(APIView):
                 })
             order = Order.objects.get(public_id=order_public_id)
             products = OrderGnerateSerializer(product, context={"order": order})
-            return Response({"order_id": order.public_id,
-                             "name": products.data["name"],
+            return Response({
+                            "order_id": order.public_id,
+                            "name": products.data["name"],
                             "status": order.status,
                             "price": products.data["price"],
                             "quantity": order.quantity,
                             "total_price": products.data["total_price"],
-                             }, status=status.HTTP_201_CREATED)
+                             }
+                            , status=status.HTTP_201_CREATED)
         except Product.DoesNotExist:
-            return Response({"error": "not created"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({ERROR: PRODUCT_DOES_NOT_EXIST}, status=status.HTTP_400_BAD_REQUEST)
         except Order.DoesNotExist:
-            return Response({"error": "not created"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({ERROR: ORDER_DOES_NOT_EXIST}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -185,11 +200,12 @@ class AddOrder(APIView):
 #             return Response({"id":order_update})
 
 
+
 class DeleteOrder(APIView):
-    def delete(self,request,public_id):
+    def delete(self, request, public_id):
         try:
             order = Order.objects.get(public_id=public_id)
             order.delete()
-            return Response({"result": "success"}, status=status.HTTP_200_OK)
+            return Response({RESULT: ORDER_IS_DELETED}, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
-            return Response({"error": "Order Does Not exist"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({ERROR: ORDER_DOES_NOT_EXIST}, status=status.HTTP_404_NOT_FOUND)
