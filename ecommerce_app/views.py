@@ -57,7 +57,7 @@ class UpdateCategory(APIView):
         try:
             category = Category.objects.get(public_id=public_id)
             serial_data = CategorySerializer(data=request.data)
-            if serial_data.is_valid():
+            if serial_data.is_valid(raise_exception=True):
                 serialized_data=serial_data.validated_data
                 name = serialized_data.get("name")
                 status = serialized_data["status"]
@@ -67,7 +67,7 @@ class UpdateCategory(APIView):
                     "category":category,
                 })
 
-            return Response({"success": f"{updated_data} category is updated !"}, HTTP_200_OK)
+            return Response({"success": "category is updated !"}, HTTP_200_OK)
         except Category.DoesNotExist:
             return Response({"message": "Category does not exist !"},HTTP_400_BAD_REQUEST)
 
@@ -148,8 +148,6 @@ class AddOrder(APIView):
                 order_public_id = AddOrderService.execute({
                     "quantity": serialized_data["quantity"],
                     "status": serialized_data["status"],
-                    "is_status": serialized_data["is_status"],
-                    "cancel_order": serialized_data["cancel_order"],
                     "product": product,
                 })
             order = Order.objects.get(public_id=order_public_id)
@@ -168,20 +166,30 @@ class AddOrder(APIView):
 
 
 
-class UpdateOrder(APIView):
-    def patch(self,request,public_id,product_public_id):
-        # breakpoint()
-        serial_data = UpdateOrderSerializer(data=request.data)
-        if serial_data.is_valid(raise_exception=True):
+# class UpdateOrder(APIView):
+#     def patch(self,request,public_id,product_public_id):
+#         # breakpoint()
+#         serial_data = UpdateOrderSerializer(data=request.data)
+#         if serial_data.is_valid(raise_exception=True):
+#             order = Order.objects.get(public_id=public_id)
+#             product = Product.objects.get(public_id=product_public_id)
+#             serialized_data = serial_data.validated_data
+#             order_update = UpdateOrderService.execute({
+#                 "product": product,
+#                 "quantity":serialized_data.data["quantity"] if serialized_data.data["quantity"] else "",
+#                 "order": order,
+#                 "status": serialized_data.data["status"] if serialized_data.data["status"] else "",
+#                 "is_status": serialized_data.data["is_status"] if serialized_data.data["is_status"] else "",
+#                 "cancel_order": serialized_data.data["cancel_order"] if serialized_data.data["cancel_order"] else "",
+#             })
+#             return Response({"id":order_update})
+
+
+class DeleteOrder(APIView):
+    def delete(self,request,public_id):
+        try:
             order = Order.objects.get(public_id=public_id)
-            product = Product.objects.get(public_id=product_public_id)
-            serialized_data = serial_data.validated_data
-            order_update = UpdateOrderService.execute({
-                "product": product,
-                "quantity":serialized_data.data["quantity"] if serialized_data.data["quantity"] else "",
-                "order": order,
-                "status": serialized_data.data["status"] if serialized_data.data["status"] else "",
-                "is_status": serialized_data.data["is_status"] if serialized_data.data["is_status"] else "",
-                "cancel_order": serialized_data.data["cancel_order"] if serialized_data.data["cancel_order"] else "",
-            })
-            return Response({"id":order_update})
+            order.delete()
+            return Response({"result": "success"}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({"error": "Order Does Not exist"}, status=status.HTTP_404_NOT_FOUND)
