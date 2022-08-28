@@ -131,5 +131,3 @@ dmypy.json
 
 #ignore file, folder
 .idea/
-.idea/misc.xml
-.idea/workspace.xml
