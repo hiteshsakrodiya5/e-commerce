@@ -17,6 +17,7 @@ from base_model.constants import (
     CATEGORY_DOES_NOT_EXIST,
     PRODUCT_NOT_CREATED,
     PRODUCT_DOES_NOT_EXIST,
+    PRODUCT_IS_DELETED,
     ORDER_DOES_NOT_EXIST,
     ORDER_IS_DELETED,
 )
@@ -146,7 +147,7 @@ class DeleteProduct(APIView):
         try:
             product = Product.objects.get(public_id=public_id)
             product.delete()
-            return Response({RESULT: "deleted successfully.."}, status=status.HTTP_200_OK)
+            return Response({RESULT: PRODUCT_IS_DELETED}, status=status.HTTP_200_OK)
         except Product.DoesNotExist:
             return Response({ERROR: PRODUCT_DOES_NOT_EXIST}, status=status.HTTP_404_NOT_FOUND)
 
