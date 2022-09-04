@@ -12,6 +12,6 @@ urlpatterns = [
     path("updateProduct/<str:public_id>/", views.UpdateProduct.as_view(), name="update_product"),
     path("deleteProduct/<str:public_id>/", views.DeleteProduct.as_view(), name="delete_product"),
     path("addOrder/<str:product_public_id>/", views.AddOrder.as_view(), name="add_order"),
-    path("deleteOrder/<str:public_id>/", views.DeleteOrder.as_view(), name="delete_order")
-    # path("product/<str:product_public_id>/orderUpddate/<public_id>/", views.UpdateOrder.as_view(), name="update_order"),
+    path("deleteOrder/<str:public_id>/", views.DeleteOrder.as_view(), name="delete_order"),
+    path("orderUpddate/<public_id>/", views.UpdateOrder.as_view(), name="update_order"),
 ]
