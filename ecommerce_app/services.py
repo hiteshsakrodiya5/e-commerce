@@ -78,19 +78,15 @@ class AddOrderService(Service):
 
 class UpdateOrderService(Service):
     def process(self):
-        breakpoint()
         quantity = self.data["quantity"]
         status = self.data["status"]
         cancel_order = self.data["cancel_order"]
         order = self.data["order"]
-        product = self.data["product"]
         if quantity:
             order.quantity = quantity
-        elif status:
+        if status:
             order.status = status
-        elif cancel_order:
+        if cancel_order:
             order.cancel_order = cancel_order
-        # elif product:
-        #     order.product = product
         order.save()
         return {}

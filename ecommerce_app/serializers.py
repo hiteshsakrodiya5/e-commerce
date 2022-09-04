@@ -67,4 +67,4 @@ class AddOrderSerializer(serializers.Serializer):
 class UpdateOrderSerializer(ModelSerializer):
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = ["quantity", "status", "cancel_order"]
