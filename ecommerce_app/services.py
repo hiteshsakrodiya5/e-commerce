@@ -52,9 +52,9 @@ class UpdateProductService(Service):
             product = Product.objects.get(public_id=product)
             if name:
                 product.name = name
-            elif price:
+            if price:
                 product.price = price
-            elif status:
+            if status:
                 product.status = status
             product.save()
             return product.public_id
