@@ -48,7 +48,7 @@ class Product(Base):
         db_table = "product"
     name = models.CharField(max_length=150, null=True)
     price = models.IntegerField(null=True)
-    category = models.ForeignKey(Category(), on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     status = models.CharField(null=True, max_length=150, choices=(("active", "active"), ("inactive", "inactive")))
 
 
@@ -56,8 +56,8 @@ class Order(Base):
     class Meta:
         db_table = "order"
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(null=False)
-    status = models.CharField(max_length=150, null=False, choices=(
+    quantity = models.IntegerField(null=True)
+    status = models.CharField(max_length=150, null=True, choices=(
         ("ok", "ok"),
         ("pending", "pending"),
         ("failed", "failed"),

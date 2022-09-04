@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import CategorySerializer, GetCategorySerializer, AddProductSerializer, ProductSerializer, \
-    AddOrderSerializer, OrderGnerateSerializer, UpdateOrderSerializer
+    AddOrderSerializer, OrderGnerateSerializer, UpdateOrderSerializer, UpdateProductSerializer
 from .services import CategoryService, UpdateCategoryService, AddProductService, UpdateProductService, AddOrderService, \
     UpdateOrderService
 from .models import Category, Product, Order
@@ -11,6 +11,7 @@ from base_model.constants import (
     PUBLIC_ID,
     RESULT,
     ERROR,
+    SUCCESS,
     CATEGORY_DOEST_NOT_CREATE,
     CATEGORY_IS_UPDATED,
     CATEGORY_IS_DELETED,
@@ -69,18 +70,18 @@ class DeleteCategory(APIView):
 class UpdateCategory(APIView):
     def patch(self, request, public_id):
         try:
+            # breakpoint()
             category = Category.objects.get(public_id=public_id)
             serial_data = CategorySerializer(data=request.data)
             if serial_data.is_valid(raise_exception=True):
                 serialized_data=serial_data.validated_data
                 name = serialized_data.get("name")
-                status = serialized_data["status"]
-                updated_data = UpdateCategoryService.execute({
+                status = serialized_data.get("status")
+                UpdateCategoryService.execute({
                     "name": name,
                     "status": status,
                     "category": category,
                 })
-
             return Response({RESULT: CATEGORY_IS_UPDATED}, HTTP_200_OK)
         except Category.DoesNotExist:
             return Response({ERROR: CATEGORY_DOES_NOT_EXIST},HTTP_400_BAD_REQUEST)
@@ -130,13 +131,14 @@ class DetailProduct(APIView):
 
 class UpdateProduct(APIView):
     def patch(self, request, public_id):
-        serial_data = AddProductSerializer(data=request.data)
+        # breakpoint()
+        serial_data = UpdateProductSerializer(data=request.data)
         if serial_data.is_valid(raise_exception=True):
             serialized_data = serial_data.validated_data
             product_public_id = UpdateProductService.execute({
-            "name": serialized_data["name"],
-            "price": serialized_data["price"],
-            "status": serialized_data["status"],
+            "name": serialized_data.get("name"),
+            "price": serialized_data.get("price"),
+            "status": serialized_data.get("status"),
             "product": public_id,
         })
             return Response({PUBLIC_ID: product_public_id}, status=status.HTTP_201_CREATED)

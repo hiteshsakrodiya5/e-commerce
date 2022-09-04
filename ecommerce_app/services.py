@@ -17,23 +17,16 @@ class CategoryService(Service):
 
 class UpdateCategoryService(Service):
     def process(self):
+        # breakpoint()
         name = self.data.get("name")
         status = self.data.get("status")
         category = self.data.get("category")
-        try:
-            category_data = Category.objects.get(public_id=category.public_id)
-            if name:
-                category_data.name = name
-            if status:
-                category_data.status = status
-            category_data.save()
-            return category_data.public_id
-        except Category.DoesNotExist:
-            return Category.objects.create(
-                public_id=PublicId.create_public_id(),
-                name=name,
-                status=status,
-            )
+        if name:
+            category.name = name
+        if status:
+            category.status = status
+        category.save()
+        return category.public_id
 
 
 class AddProductService(Service):
@@ -50,6 +43,7 @@ class AddProductService(Service):
 
 class UpdateProductService(Service):
     def process(self):
+        # breakpoint()
         name = self.data["name"]
         price = self.data["price"]
         status = self.data["status"]

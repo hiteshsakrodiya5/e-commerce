@@ -3,9 +3,11 @@ from rest_framework.serializers import ModelSerializer
 from .models import Category, Product, Order
 
 
-class CategorySerializer(serializers.Serializer):
-    name = serializers.CharField(max_length=150, allow_null=True)
-    status = serializers.CharField(max_length=150, allow_null=True)
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = "__all__"
 
 
 class GetCategorySerializer(serializers.ModelSerializer):
@@ -24,6 +26,11 @@ class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+class UpdateProductSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ["name", "status", "price"]
 
 
 class OrderGnerateSerializer(serializers.Serializer):
